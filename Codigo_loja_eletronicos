@@ -1,0 +1,151 @@
+banco_dados = []
+vendas = []
+
+def pausar():
+    input('Pressione ENTER para continuar...')
+
+def mostrar_produtos():
+    if not banco_dados:
+        print("Não há produtos no estoque.")
+    else:
+        contador = 1
+        for item in banco_dados:
+            print(f'{contador} - Nome: {item["nome"]}, Preço: R${item["preco"]:.2f}, Quantidade: {item["quantidade"]}')
+            contador += 1
+
+def registrar_venda():
+    if not banco_dados:
+        print("Não há produtos para vender.")
+        return
+    
+    mostrar_produtos()
+    numero_produto = int(input('Digite o número do produto que deseja vender: '))
+    
+    if 1 <= numero_produto <= len(banco_dados):
+        quantidade_vendida = int(input('Digite a quantidade a ser vendida: '))
+        produto = banco_dados[numero_produto - 1]
+        
+        if produto['quantidade'] >= quantidade_vendida:
+            produto['quantidade'] -= quantidade_vendida
+            cliente = input('Digite o nome do cliente: ')
+            venda = {'produto': produto['nome'], 'quantidade': quantidade_vendida, 'cliente': cliente, 'preco_total': produto['preco'] * quantidade_vendida}
+            vendas.append(venda)
+            print(f'Venda realizada com sucesso para o cliente {cliente}!')
+        else:
+            print('Quantidade disponível insuficiente para a venda.')
+    else:
+        print("Número de produto inválido.")
+    
+    pausar()
+
+def mostrar_historico_vendas():
+    if not vendas:
+        print("Não há vendas registradas.")
+    else:
+        print("Histórico de Vendas:")
+        for venda in vendas:
+            print(f'Produto: {venda["produto"]}, Quantidade: {venda["quantidade"]}, Cliente: {venda["cliente"]}, Preço Total: R${venda["preco_total"]:.2f}')
+    pausar()
+
+def selecionar_menu(opcao):
+    if opcao == '1':  
+        nome = input('Digite o nome do produto: ')
+        
+        
+        produto_existente = False
+        for item in banco_dados:
+            if item['nome'] == nome:
+                produto_existente = True
+                break
+        
+        if produto_existente:
+            print(f'O produto "{nome}" já existe no estoque.')
+        else:
+            preco = float(input('Digite o preço do produto: '))
+            quantidade = int(input('Digite a quantidade em estoque: '))
+            produto = {'nome': nome, 'preco': preco, 'quantidade': quantidade}
+            banco_dados.append(produto)
+            print(f'Produto "{nome}" adicionado com sucesso!')
+
+    elif opcao == '2':  
+        mostrar_produtos()
+        pausar()
+
+    elif opcao == '3':  
+        if not banco_dados:
+            print("Não há produtos para excluir.")
+        else:
+            mostrar_produtos()
+            numero_produto = int(input('Digite o número do produto para excluir: '))
+            if 1 <= numero_produto <= len(banco_dados):
+                del banco_dados[numero_produto - 1]
+                print("Produto excluído com sucesso!")
+            else:
+                print("Número de produto inválido.")
+        pausar()
+
+    elif opcao == '4':  
+        if not banco_dados:
+            print("Não há produtos para atualizar.")
+        else:
+            mostrar_produtos()
+            numero_produto = int(input('Digite o número do produto para atualizar: '))
+            if 1 <= numero_produto <= len(banco_dados):
+                produto = banco_dados[numero_produto - 1]
+                print('O que você deseja atualizar?')
+                print('1 - Nome')
+                print('2 - Preço')
+                print('3 - Quantidade')
+                opcao_atualizar = input('Escolha uma opção: ')
+                
+                if opcao_atualizar == '1':  
+                    novo_nome = input('Digite o novo nome do produto: ')
+                    produto['nome'] = novo_nome
+                    print(f'Nome atualizado para "{novo_nome}".')
+
+                elif opcao_atualizar == '2': 
+                    novo_preco = float(input('Digite o novo preço do produto: '))
+                    produto['preco'] = novo_preco
+                    print(f'Preço atualizado para R${novo_preco:.2f}.')
+
+                elif opcao_atualizar == '3': 
+                    nova_quantidade = int(input('Digite a nova quantidade em estoque: '))
+                    produto['quantidade'] = nova_quantidade
+                    print(f'Quantidade atualizada para {nova_quantidade}.')
+                else:
+                    print('Opção inválida.')
+
+            else:
+                print("Número de produto inválido.")
+        pausar()
+
+    elif opcao == '5': 
+        registrar_venda()
+
+    elif opcao == '6': 
+        mostrar_historico_vendas()
+
+    elif opcao == '0':  
+        print('Saindo do sistema...')
+        exit(0)
+
+    else:
+        print('Opção incorreta, tente novamente!')
+
+def exibir_menu():
+    print('---> MENU <---')
+    print('1 - Adicionar produtos')
+    print('2 - Visualizar estoque')
+    print('3 - Excluir produtos')
+    print('4 - Atualizar produtos')
+    print('5 - Registrar venda')
+    print('6 - Histórico de vendas')
+    print('0 - Sair do sistema')
+    opcao = input('Escolha uma opção: ')
+
+    selecionar_menu(opcao)
+
+    if opcao != '0':
+        exibir_menu()
+
+exibir_menu()
